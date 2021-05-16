@@ -1,0 +1,60 @@
+﻿{% extends "app/layout.html" %}
+{% block content %}
+
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3> 
+
+{% regroup lista_Preguntas by category as listaCategoria %}
+{% if listaCategoria %}
+    <select name="lista" id="lista">
+        {% for category in listaCategoria %}
+             {% if category.grouper != None %}
+                <option>                    
+                    {{ category.grouper}}
+                </option>
+             {% endif %}
+        {% endfor %}
+    </select>
+    <br><br>
+    <!-- pulsarEvento(document.getElementById('lista').value)-->    
+    <input type="button" value="Filtrar por tema" onclick="pulsarEvento(document.getElementById('lista').options[document.getElementById('lista').selectedIndex].text)">
+
+    <script>
+        function pulsarEvento(categoria) {
+            var dataNode = document.getElementById('preguntas');  
+            var ul = document.getElementById('ul');
+            ul.innerHTML = ""
+
+            {% for question in latest_question_list %}
+                var categoriaPregunta = "{{ question.category }}"
+                if(categoriaPregunta == categoria){
+                      var a = document.createElement('a');
+                      var texto = "{{ question.question_text }}"
+                      var aTexto = document.createTextNode(texto);
+                      a.setAttribute('href', "{% url 'detail' question.id %}");
+                      a.appendChild(aTexto);
+                      
+                      var li = document.createElement('li');
+                      li.appendChild(a);
+                      ul.appendChild(li);
+                }
+            {% endfor %}         
+        }
+    </script>
+
+    <br><br>
+
+    <ul id="ul">
+    {% for question in latest_question_list %}
+        <li><a href="{% url 'detail' question.id %}" id="preguntas">{{ question.question_text }}</a></li>
+    {% endfor %}
+    </ul>
+  
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+{% if request.user.is_authenticated %}
+<a href="{% url 'add' %}"><h2>Insertar pregunta</h2></a> 
+{% endif %}
+
+{% endblock %}

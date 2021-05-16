@@ -1,0 +1,24 @@
+﻿{% extends "app/layout.html" %}
+{% block content %}
+
+<style>
+.error {
+  color: #ba3939;
+  background: #ffe0e0;
+  border: 1px solid #a33a3a;
+}
+</style>
+
+<h2>{{ title }}.</h2>
+<h3>{{ message }}</h3>
+    {% if question.choice_set.all|length < 2 %}
+        <div class="error">Hay que insertar mínimo dos opciones</div>
+    {% endif %}
+<div class="error">{{error}}</div>
+<h1>Insertar una opción</h1>
+        <form method="POST" class="post-form">{% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit" class="save btn btn-default">Save</button>
+        </form>
+<a href="{% url 'index' %}">Ver preguntas</a> 
+{% endblock %}
